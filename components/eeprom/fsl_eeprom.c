@@ -41,6 +41,10 @@
 static uint16_t Eeprom_MaxTransferSize(uint16_t offset, uint16_t len, 
     uint16_t pageSize);
 
+static status_t Eeprom_LPI2C_Send(LPI2C_Type *base, uint8_t deviceAddress,
+    uint32_t subAddress, uint8_t subAddressSize, uint8_t *txBuff,
+    uint16_t txBuffSize, uint32_t flags);
+
 static status_t Eeprom_LPI2C_Receive(LPI2C_Type *base, uint8_t deviceAddress,
     uint32_t subAddress, uint8_t subAddressSize, uint8_t *rxBuff,
     uint16_t rxBuffSize, uint32_t flags);
@@ -116,6 +120,56 @@ bool Eeprom_Read(const Eeprom_Type *dev, uint16_t addr, uint8_t *data,
     return (status == kStatus_Success);
 }
 
+/*--------------------------------------------------------------------------*/
+/* Write data to EEPROM                                                     */
+/*--------------------------------------------------------------------------*/
+bool Eeprom_Write(const Eeprom_Type *dev, uint16_t addr, uint8_t *data,
+    uint16_t size)
+{
+    uint16_t devAddr;
+    uint16_t writeSize;
+    status_t status = kStatus_Success;
+
+    if (dev == NULL || data == NULL)
+    {
+        return false;
+    }
+
+    if ((addr + size) > dev->size || size == 0)
+    {
+        return false;
+    }
+
+    while(size > 0)
+    {
+        devAddr = dev->devAddr;
+
+        if (dev->subAddrMask)
+        {
+            devAddr |= (addr >> (8 * dev->subAddrSize) & dev->subAddrMask);
+        }
+
+        /* Up to page size */
+        writeSize = Eeprom_MaxTransferSize(addr, size, dev->pageSize);
+
+        status = Eeprom_LPI2C_Send(dev->i2cBase, devAddr, addr,
+            dev->subAddrSize, data, writeSize, kLPI2C_TransferDefaultFlag);
+
+        if (status != kStatus_Success)
+        {
+            break;
+        }
+
+        addr += writeSize;
+        data += writeSize;
+        size -= writeSize;
+
+        SystemTimeDelay(20000U);
+    }
+
+    return (status == kStatus_Success);
+}
+
 bool Eeprom_Dump(const Eeprom_Type *dev, uint16_t addr, uint16_t size)
 {
     uint8_t data[16];
@@ -179,6 +233,36 @@ static uint16_t Eeprom_MaxTransferSize(uint16_t offset, uint16_t len,
     }
 
 	return len;
+}
+
+/*--------------------------------------------------------------------------*/
+/* LPI2C port transmit                                                      */
+/*--------------------------------------------------------------------------*/
+static status_t Eeprom_LPI2C_Send(LPI2C_Type *base, uint8_t deviceAddress,
+    uint32_t subAddress, uint8_t subAddressSize, uint8_t *txBuff,
+    uint16_t txBuffSize, uint32_t flags)
+{
+    lpi2c_master_transfer_t xfer;
+
+#ifdef DEBUG
+    printf("LPI2C_Send\n");
+    printf("    base: %p\n", base);
+    printf("    deviceAddress: %x\n", deviceAddress);
+    printf("    subAddress: %x\n", subAddress);
+    printf("    subAddressSize: %d\n", subAddressSize);
+    printf("    txBuff: %p\n", txBuff);
+    printf("    txBuffSize: %d\n", txBuffSize);
+#endif
+
+    xfer.flags          = flags;
+    xfer.slaveAddress   = deviceAddress;
+    xfer.direction      = kLPI2C_Write;
+    xfer.subaddress     = subAddress;
+    xfer.subaddressSize = subAddressSize;
+    xfer.data           = txBuff;
+    xfer.dataSize       = txBuffSize;
+
+    return LPI2C_MasterTransferBlocking(base, &xfer);
 }
 
 /*--------------------------------------------------------------------------*/
