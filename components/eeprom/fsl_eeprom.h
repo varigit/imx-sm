@@ -67,6 +67,18 @@ bool Eeprom_Init(const Eeprom_Type *dev);
 bool Eeprom_Read(const Eeprom_Type *dev, uint16_t addr, uint8_t *data, uint16_t size);
 
 /*!
+ * Write data to EEPROM
+ *
+ * @param[in]     dev      Device info.
+ * @param[in]     addr     Address to write to.
+ * @param[in]     data     Pointer to data buffer.
+ * @param[in]     size     Number of bytes to write.
+ *
+ * @return True if successful.
+ */
+bool Eeprom_Write(const Eeprom_Type *dev, uint16_t addr, uint8_t *data, uint16_t size);
+
+/*!
  * Dump EEPROM content
  *
  * @param[in]     dev      Device info.
