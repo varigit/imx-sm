@@ -2,6 +2,7 @@
 ** ###################################################################
 **
 ** Copyright 2023-2026 NXP
+** Copyright 2024-2026 Variscite
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -78,6 +79,8 @@
 #define SCMI_MSG_MISC_BOARD_INFO             0xEU
 /*! Negotiate the protocol version */
 #define SCMI_MSG_NEGOTIATE_PROTOCOL_VERSION  0x10U
+/*! EEPROM Xfer */
+#define SCMI_MSG_MISC_EEPROM_XFER            0x1AU
 /*! Set an extended control value */
 #define SCMI_MSG_MISC_CONTROL_EXT_SET        0x20U
 /*! Get an extended control value */
@@ -252,6 +255,16 @@
 #define SCMI_MISC_DDR_ATTR_WIDTH(x)    (((x) & 0x700U) >> 8U)
 /*! DDR type */
 #define SCMI_MISC_DDR_ATTR_TYPE(x)     (((x) & 0x1FU) >> 0U)
+/** @} */
+
+/*!
+ * @name SCMI EEPROM transfer direction
+ */
+/** @{ */
+/*! Direction read */
+#define SCMI_MISC_EEPROM_XFER_DIR_READ   0U
+/*! Direction write */
+#define SCMI_MISC_EEPROM_XFER_DIR_WRITE  1U
 /** @} */
 
 /* Functions */
@@ -811,6 +824,23 @@ int32_t SCMI_MiscDdrInfoGet(uint32_t channel, uint32_t ddrRgdId,
  */
 int32_t SCMI_MiscControlEvent(uint32_t channel, uint32_t *ctrlId,
     uint32_t *flags);
+
+/*!
+ * Transfer to/from EEPROM.
+ *
+ * @param[in]     channel  P2A notify channel for comms.
+ * @param[in]     devId    I2C address of the EEPROM.
+ * @param[in]     dir      Direction of transfer.
+ * @param[in]     offset   Offset to transfer to/from.
+ * @param[in]     buf     Pointer to data to transfer.
+ * @param[in]     len      Length of data to transfer.
+ * @return Returns the status (::SM_ERR_SUCCESS = success).
+ *
+ * Return errors (see @ref STATUS "SM error codes"):
+ * - ::SM_ERR_HARDWARE_ERROR: if there is an issue transferring to/from the EEPROM.
+ */
+int32_t SCMI_MiscEepromXfer(uint32_t channel, uint8_t devId, uint8_t dir,
+    uint16_t offset, uint8_t* buffer, uint16_t len);
 
 #endif /* SCMI_MISC_H */
 
