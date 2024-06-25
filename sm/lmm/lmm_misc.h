@@ -2,6 +2,7 @@
 ** ###################################################################
 **
 ** Copyright 2023-2024 NXP
+** Copyright 2024 Variscite
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -171,6 +172,27 @@ int32_t LMM_MiscRomPassoverGet(uint32_t lmId,
  * @param[in]  flags      Flags for event type
  */
 void LMM_MiscControlEvent(uint32_t ctrlId, uint32_t flags);
+
+/*!
+ * Perform a miscellaneous EEPROM transfer.
+ *
+ * @param[in]     dev     Device to transfer to/from
+ * @param[in]     dir     Direction of transfer
+ * @param[in]     offset  Offset in EEPROM to transfer to/from
+ * @param[in]     buf     Pointer to buffer to transfer
+ * @param[in]     len     Length of transfer
+ *
+ * This function allows a caller to perform a miscellaneous EEPROM
+ * transfer. The direction is either read or write.
+ *
+ * @return Returns the status (::SM_ERR_SUCCESS = success).
+ *
+ * Return errors (see @ref STATUS "SM error codes"):
+ * - ::SM_ERR_SUCCESS: if the transfer is successful.
+ * - others returned by ::SM_EEPROMXFER
+ */
+int32_t LMM_MiscEepromXfer(uint8_t dev, uint8_t dir, uint16_t offset,
+    uint8_t* buf, uint16_t len);
 
 #endif /* LMM_MISC_H */
 
