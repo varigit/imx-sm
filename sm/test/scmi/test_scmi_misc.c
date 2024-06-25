@@ -2,6 +2,7 @@
 ** ###################################################################
 **
 ** Copyright 2023-2024 NXP
+** Copyright 2024 Variscite
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -166,6 +167,36 @@ void TEST_ScmiMisc(void)
         /* Branch -- Nullpointer */
         CHECK(SCMI_MiscRomPassoverGet(SM_TEST_DEFAULT_CHN, NULL,
             NULL));
+    }
+
+    /* Test EEPROM Xfer */
+    {
+        uint8_t devId = 0x52U;
+        uint8_t buffer[64];
+        uint16_t offset = 0U;
+
+        CHECK(SCMI_MiscEepromXfer(SM_TEST_DEFAULT_CHN, devId, SCMI_MISC_EEPROM_XFER_DIR_READ,
+            offset, buffer, sizeof(buffer)));
+
+        /* Branch -- Invalid Channel */
+        NECHECK(SCMI_MiscEepromXfer(SM_SCMI_NUM_CHN, devId, SCMI_MISC_EEPROM_XFER_DIR_READ,
+            offset, buffer, sizeof(buffer)), SCMI_ERR_INVALID_PARAMETERS);
+
+        /* Branch -- Nullpointer */
+        NECHECK(SCMI_MiscEepromXfer(SM_TEST_DEFAULT_CHN, devId, SCMI_MISC_EEPROM_XFER_DIR_READ,
+            offset, NULL, sizeof(buffer)), SCMI_ERR_INVALID_PARAMETERS);
+
+        /* Branch -- Invalid length */
+        NECHECK(SCMI_MiscEepromXfer(SM_TEST_DEFAULT_CHN, devId, SCMI_MISC_EEPROM_XFER_DIR_READ,
+            offset, buffer, 0), SCMI_ERR_INVALID_PARAMETERS);
+
+        /* Branch -- Invalid DevId */
+        NECHECK(SCMI_MiscEepromXfer(SM_TEST_DEFAULT_CHN, 0xFFU, SCMI_MISC_EEPROM_XFER_DIR_READ,
+            offset, buffer, sizeof(buffer)), SCMI_ERR_NOT_FOUND);
+
+        /* Branch -- Invalid direction */
+        NECHECK(SCMI_MiscEepromXfer(SM_TEST_DEFAULT_CHN, devId, 0xFFU,
+            offset, buffer, sizeof(buffer)), SCMI_ERR_INVALID_PARAMETERS);
     }
 
     /* Control Set */
