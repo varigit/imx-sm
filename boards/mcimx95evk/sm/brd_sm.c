@@ -407,8 +407,26 @@ void BRD_SM_ShutdownRecordSave(dev_sm_rst_rec_t shutdownRec)
 /*--------------------------------------------------------------------------*/
 int32_t BRD_SM_SystemReset(void)
 {
+    int32_t status = SM_ERR_SUCCESS;
+    rgpio_pin_config_t gpioConfig =
+    {
+        kRGPIO_DigitalOutput,
+        0U
+    };
+
+    printf("SYSTEM RESET\n");
+    /* Drive WDOG_ANY to reset PMIC */
+    RGPIO_PinInit(GPIO1, 15U, &gpioConfig);
+    IOMUXC_SetPinMux(IOMUXC_PAD_WDOG_ANY__GPIO1_IO_BIT15, 0U);
+
+    /* Wait for PMIC to react */
+    SystemTimeDelay(1000U);
+
+    /* Fall back to warm reset of the device */
+    status = DEV_SM_SystemReset();
+
     /* Return status */
-    return 0;
+    return status;
 }
 
 /*--------------------------------------------------------------------------*/
