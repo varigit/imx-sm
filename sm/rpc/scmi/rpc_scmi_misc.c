@@ -63,9 +63,9 @@
 #define COMMAND_MISC_SI_INFO                 0xBU
 #define COMMAND_MISC_CFG_INFO                0xCU
 #define COMMAND_MISC_SYSLOG                  0xDU
-#define COMMAND_MISC_EEPROM_XFER             0xEU
 #define COMMAND_NEGOTIATE_PROTOCOL_VERSION   0x10U
-#define COMMAND_SUPPORTED_MASK               0x13FFFUL
+#define COMMAND_MISC_EEPROM_XFER             0x1AU
+#define COMMAND_SUPPORTED_MASK               0x4013FFFUL
 
 /* SCMI max misc argument lengths */
 #define MISC_MAX_BUILDDATE  16U
@@ -398,7 +398,7 @@ typedef struct
     uint32_t buffer;
     /* Length of data to xfer */
     uint32_t len;
-} msg_rmisc12_t;
+} msg_rmisc26_t;
 
 /* Local functions */
 
@@ -437,7 +437,7 @@ static int32_t MiscControlEvent(scmi_msg_id_t msgId,
 static int32_t MiscResetAgentConfig(uint32_t lmId, uint32_t agentId,
     bool permissionsReset);
 static int32_t MiscEepromXfer(const scmi_caller_t *caller,
-    const msg_rmisc12_t *in, scmi_msg_status_t *out);
+    const msg_rmisc26_t *in, scmi_msg_status_t *out);
 
 /*--------------------------------------------------------------------------*/
 /* Dispatch SCMI command                                                    */
@@ -529,7 +529,7 @@ int32_t RPC_SCMI_MiscDispatchCommand(scmi_caller_t *caller,
             break;
         case COMMAND_MISC_EEPROM_XFER:
             lenOut = sizeof(scmi_msg_status_t);
-            status = MiscEepromXfer(caller, (const msg_rmisc12_t*) in,
+            status = MiscEepromXfer(caller, (const msg_rmisc26_t*) in,
                 (scmi_msg_status_t*) out);
             break;
         case COMMAND_NEGOTIATE_PROTOCOL_VERSION:
@@ -1491,7 +1491,7 @@ static int32_t MiscCfgInfo(const scmi_caller_t *caller,
 /* - SM_ERR_PROTOCOL_ERROR: if the incoming payload is too small.           */
 /*--------------------------------------------------------------------------*/
 static int32_t MiscEepromXfer(const scmi_caller_t *caller,
-    const msg_rmisc12_t *in, scmi_msg_status_t *out)
+    const msg_rmisc26_t *in, scmi_msg_status_t *out)
 {
     uint8_t devId;
     uint8_t dir;
