@@ -176,7 +176,6 @@ void LMM_MiscControlEvent(uint32_t ctrlId, uint32_t flags);
 /*!
  * Perform a miscellaneous EEPROM transfer.
  *
- * @param[in]     dev     Device to transfer to/from
  * @param[in]     dir     Direction of transfer
  * @param[in]     offset  Offset in EEPROM to transfer to/from
  * @param[in]     buf     Pointer to buffer to transfer
@@ -191,7 +190,7 @@ void LMM_MiscControlEvent(uint32_t ctrlId, uint32_t flags);
  * - ::SM_ERR_SUCCESS: if the transfer is successful.
  * - others returned by ::SM_EEPROMXFER
  */
-int32_t LMM_MiscEepromXfer(uint8_t dev, uint8_t dir, uint16_t offset,
+int32_t LMM_MiscEepromXfer(uint8_t dir, uint16_t offset,
     uint8_t* buf, uint16_t len);
 
 #endif /* LMM_MISC_H */

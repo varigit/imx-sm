@@ -283,7 +283,6 @@ int32_t BRD_SM_SupplyLevelGet(uint32_t domain, uint32_t *microVolt);
 /*!
  * Transfer to/from EEPROM.
  *
- * @param[in]     devAddr  I2C address of the EEPROM.
  * @param[in]     dir      Direction of transfer.
  * @param[in]     offset   Offset to transfer to/from.
  * @param[in]     buffer   Pointer to transfer buffer.
@@ -293,7 +292,7 @@ int32_t BRD_SM_SupplyLevelGet(uint32_t domain, uint32_t *microVolt);
  * Return errors (see @ref STATUS "SM error codes"):
  * - ::SM_ERR_HARDWARE_ERROR: if there is an issue transferring to/from the EEPROM.
  */
-int32_t BRD_SM_EepromXfer(uint8_t devAddr, uint8_t dir, uint16_t offset,
+int32_t BRD_SM_EepromXfer(uint8_t dir, uint16_t offset,
     uint8_t *buffer, uint16_t len);
 #endif
 

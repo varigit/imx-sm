@@ -389,8 +389,6 @@ typedef struct
 {
     /* Header word */
     uint32_t header;
-    /* Device Id */
-    uint32_t devId;
     /* Direction of Xfer (0: read, 1: write) */
     uint32_t dir;
     /* Offset within EEPROM */
@@ -1492,7 +1490,6 @@ static int32_t MiscCfgInfo(const scmi_caller_t *caller,
 /*                                                                          */
 /* Parameters:                                                              */
 /* - caller: Caller info                                                    */
-/* - in->devId: Device ID                                                   */
 /* - in->direction: Transfer direction                                      */
 /* - in->offset: Offset in the EEPROM                                       */
 /* - in->len: Length of the transfer                                        */
@@ -1510,7 +1507,6 @@ static int32_t MiscCfgInfo(const scmi_caller_t *caller,
 static int32_t MiscEepromXfer(const scmi_caller_t *caller,
     const msg_rmisc26_t *in, msg_tmisc26_t *out)
 {
-    uint8_t devId;
     uint8_t dir;
     uint8_t *buf;
     uint16_t len;
@@ -1535,7 +1531,6 @@ static int32_t MiscEepromXfer(const scmi_caller_t *caller,
     /* Perform Xfer on EEPROM */
     if (status == SM_ERR_SUCCESS)
     {
-        devId = (uint8_t) in->devId;
         dir = (uint8_t) in->dir;
         len = (uint16_t) in->len;
         offset = (uint16_t) in->offset;
@@ -1550,7 +1545,7 @@ static int32_t MiscEepromXfer(const scmi_caller_t *caller,
             buf = (uint8_t *)in->buf;
         }
 
-        status = LMM_MiscEepromXfer(devId, dir, offset, buf, len);
+        status = LMM_MiscEepromXfer(dir, offset, buf, len);
     }
 
     /* Return status */

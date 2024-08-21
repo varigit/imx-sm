@@ -155,14 +155,13 @@ void LMM_MiscControlEvent(uint32_t ctrlId, uint32_t flags)
 /*--------------------------------------------------------------------------*/
 /* Eeprom Xfer misc protocol message                                        */
 /*--------------------------------------------------------------------------*/
-int32_t LMM_MiscEepromXfer(uint8_t dev, uint8_t dir, uint16_t offset,
+int32_t LMM_MiscEepromXfer(uint8_t dir, uint16_t offset,
     uint8_t* buf, uint16_t len)
 {
 #ifdef BOARD_HAS_EEPROM
     /* Just passthru to board/device */
-    return SM_EEPROMXFER(dev, dir, offset, buf, len);
+    return SM_EEPROMXFER(dir, offset, buf, len);
 #else
-    (void)dev;
     (void)dir;
     (void)buf;
     (void)len;
