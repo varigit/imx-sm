@@ -73,6 +73,7 @@
 #define MISC_MAX_NAME       16U
 #define MISC_MAX_SINAME     16U
 #define MISC_MAX_CFGNAME    16U
+#define MISC_MAX_EEPROM_X   64U
 #define MISC_MAX_VAL_T      SCMI_ARRAY(8U, uint32_t)
 #define MISC_MAX_VAL        SCMI_ARRAY(8U, uint32_t)
 #define MISC_MAX_ARG_T      SCMI_ARRAY(12U, uint32_t)
@@ -394,11 +395,24 @@ typedef struct
     uint32_t dir;
     /* Offset within EEPROM */
     uint32_t offset;
-    /* Buffer Address */
-    uint32_t buffer;
-    /* Length of data to xfer */
+    /* Length of data */
     uint32_t len;
+    /* Data buffer */
+    uint8_t buf[MISC_MAX_EEPROM_X];
 } msg_rmisc26_t;
+
+/* Response type for EeepromXfer() */
+typedef struct
+{
+    /* Header word */
+    uint32_t header;
+    /* Return status */
+    int32_t status;
+    /* Length of data */
+    uint32_t len;
+    /* Data buffer */
+    uint8_t buf[MISC_MAX_EEPROM_X];
+} msg_tmisc26_t;
 
 /* Local functions */
 
@@ -437,7 +451,7 @@ static int32_t MiscControlEvent(scmi_msg_id_t msgId,
 static int32_t MiscResetAgentConfig(uint32_t lmId, uint32_t agentId,
     bool permissionsReset);
 static int32_t MiscEepromXfer(const scmi_caller_t *caller,
-    const msg_rmisc26_t *in, scmi_msg_status_t *out);
+    const msg_rmisc26_t *in, msg_tmisc26_t *out);
 
 /*--------------------------------------------------------------------------*/
 /* Dispatch SCMI command                                                    */
@@ -528,9 +542,9 @@ int32_t RPC_SCMI_MiscDispatchCommand(scmi_caller_t *caller,
                 (msg_tmisc13_t*) out, &lenOut);
             break;
         case COMMAND_MISC_EEPROM_XFER:
-            lenOut = sizeof(scmi_msg_status_t);
+            lenOut = sizeof(msg_tmisc26_t);
             status = MiscEepromXfer(caller, (const msg_rmisc26_t*) in,
-                (scmi_msg_status_t*) out);
+                (msg_tmisc26_t*) out);
             break;
         case COMMAND_NEGOTIATE_PROTOCOL_VERSION:
             lenOut = sizeof(const scmi_msg_status_t);
@@ -1481,17 +1495,20 @@ static int32_t MiscCfgInfo(const scmi_caller_t *caller,
 /* - in->devId: Device ID                                                   */
 /* - in->direction: Transfer direction                                      */
 /* - in->offset: Offset in the EEPROM                                       */
-/* - in->buffer: Buffer to transfer                                         */
 /* - in->len: Length of the transfer                                        */
+/* - in->buf: Data buffer                                                   */
 /*                                                                          */
 /* Process the MISC_EEPROM_XFER message. Platform handler for               */
 /* SCMI_MiscEepromXfer().                                                   */
 /*                                                                          */
 /* Return errors:                                                           */
 /* - SM_ERR_PROTOCOL_ERROR: if the incoming payload is too small.           */
+/* - SM_ERR_INVALID_PARAMETERS: if the EEPROM transfer is invalid.          */
 /*--------------------------------------------------------------------------*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 static int32_t MiscEepromXfer(const scmi_caller_t *caller,
-    const msg_rmisc26_t *in, scmi_msg_status_t *out)
+    const msg_rmisc26_t *in, msg_tmisc26_t *out)
 {
     uint8_t devId;
     uint8_t dir;
@@ -1506,14 +1523,32 @@ static int32_t MiscEepromXfer(const scmi_caller_t *caller,
         status = SM_ERR_PROTOCOL_ERROR;
     }
 
+    /* Check requested length */
+    if (status == SM_ERR_SUCCESS)
+    {
+        if (in->len > MISC_MAX_EEPROM_X)
+        {
+            status = SM_ERR_PROTOCOL_ERROR;
+        }
+    }
+
     /* Perform Xfer on EEPROM */
     if (status == SM_ERR_SUCCESS)
     {
         devId = (uint8_t) in->devId;
         dir = (uint8_t) in->dir;
-        buf = (uint8_t*) in->buffer;
         len = (uint16_t) in->len;
         offset = (uint16_t) in->offset;
+
+        if (dir == 0)
+        {
+            out->len = len;
+            buf = (uint8_t *)out->buf;
+        }
+        else
+        {
+            buf = (uint8_t *)in->buf;
+        }
 
         status = LMM_MiscEepromXfer(devId, dir, offset, buf, len);
     }
@@ -1521,6 +1556,7 @@ static int32_t MiscEepromXfer(const scmi_caller_t *caller,
     /* Return status */
     return status;
 }
+#pragma GCC diagnostic pop
 
 /*--------------------------------------------------------------------------*/
 /* Get system log                                                           */
