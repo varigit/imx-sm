@@ -642,17 +642,11 @@ static int32_t BRD_SM_InitComplete(uint32_t mSel)
 /*--------------------------------------------------------------------------*/
 /* Read data from EEPROM                                                    */
 /*--------------------------------------------------------------------------*/
-int32_t BRD_SM_EepromRead(uint8_t devAddr, uint16_t offset, uint8_t *data,
-    uint16_t len)
+int32_t BRD_SM_EepromRead(uint16_t offset, uint8_t *data, uint16_t len)
 {
     if (data == NULL || len == 0U)
     {
         return SM_ERR_INVALID_PARAMETERS;
-    }
-
-    if (devAddr != eepromDev.devAddr)
-    {
-        return SM_ERR_NOT_FOUND;
     }
 
     if (!Eeprom_Read(&eepromDev, offset, data, len))
@@ -666,17 +660,11 @@ int32_t BRD_SM_EepromRead(uint8_t devAddr, uint16_t offset, uint8_t *data,
 /*--------------------------------------------------------------------------*/
 /* Write data to EEPROM                                                     */
 /*--------------------------------------------------------------------------*/
-int32_t BRD_SM_EepromWrite(uint8_t devAddr, uint16_t offset, uint8_t *data,
-    uint16_t len)
+int32_t BRD_SM_EepromWrite(uint16_t offset, uint8_t *data, uint16_t len)
 {
     if (data == NULL || len == 0U)
     {
         return SM_ERR_INVALID_PARAMETERS;
-    }
-
-    if (devAddr != eepromDev.devAddr)
-    {
-        return SM_ERR_NOT_FOUND;
     }
 
     if (!Eeprom_Write(&eepromDev, offset, data, len))
@@ -690,20 +678,15 @@ int32_t BRD_SM_EepromWrite(uint8_t devAddr, uint16_t offset, uint8_t *data,
 /*--------------------------------------------------------------------------*/
 /* Xfer data to EEPROM                                                      */
 /*--------------------------------------------------------------------------*/
-int32_t BRD_SM_EepromXfer(uint8_t devAddr, uint8_t dir, uint16_t offset,
+int32_t BRD_SM_EepromXfer(uint8_t dir, uint16_t offset,
     uint8_t *buffer, uint16_t len)
 {
-    if (devAddr != eepromDev.devAddr)
-    {
-        return SM_ERR_NOT_FOUND;
-    }
-
     switch (dir)
     {
         case BRD_SM_EEPROM_XFER_READ:
-            return BRD_SM_EepromRead(devAddr, offset, buffer, len);
+            return BRD_SM_EepromRead(offset, buffer, len);
         case BRD_SM_EEPROM_XFER_WRITE:
-            return BRD_SM_EepromWrite(devAddr, offset, buffer, len);
+            return BRD_SM_EepromWrite(offset, buffer, len);
         default:
             return SM_ERR_INVALID_PARAMETERS;
     }
