@@ -1006,8 +1006,6 @@ static int32_t LM_ProcessStop(uint32_t lmId, uint32_t stop)
                     (void) LMM_CpuStop(ptr->lmId, ptr->rsrc);
                     break;
                 case LMM_SS_VOLT:
-                    (void) LMM_VoltageModeSet(ptr->lmId, ptr->rsrc,
-                        DEV_SM_VOLT_MODE_OFF);
                     break;
                 default:
                     status = SM_ERR_NOT_SUPPORTED;
