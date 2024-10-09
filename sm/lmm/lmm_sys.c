@@ -1280,8 +1280,6 @@ static int32_t LM_ProcessStop(uint32_t lmId, uint32_t stop)
                     (void) LMM_CpuStop(ptr->lmId, ptr->rsrc);
                     break;
                 case LMM_SS_VOLT:
-                    (void) LMM_VoltageModeSet(ptr->lmId, ptr->rsrc,
-                        U64_U8(ptr->arg[0]));
                     break;
                 case LMM_SS_RST:
                     {
