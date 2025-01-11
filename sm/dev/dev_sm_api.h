@@ -2,6 +2,7 @@
 ** ###################################################################
 **
 ** Copyright 2023-2026 NXP
+** Copyright 2024-2026 Variscite
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -643,6 +644,11 @@
 #ifndef SM_FUSEINIT
 /*! Redirector (device/board) for the fuse init */
 #define SM_FUSEINIT             DEV_SM_FuseInit
+#endif
+
+#ifndef SM_EEPROMXFER
+/*! Redirector (device/board) to xfer Eeprom */
+#define SM_EEPROMXFER           BRD_SM_EepromXfer
 #endif
 
 /** @} */
