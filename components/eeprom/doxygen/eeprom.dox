@@ -1,0 +1,14 @@
+
+/*!
+ * @addtogroup components
+ * @{
+ */
+
+/*!
+@defgroup eeprom EEPROM Driver
+@brief Component driver for a EEPROM
+@details Component driver for a EEPROM.
+*/
+
+/** @} */
+
