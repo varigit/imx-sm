@@ -2,6 +2,7 @@
 ** ###################################################################
 **
 ** Copyright 2023-2025 NXP
+** Copyright 2024-2025 Variscite
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -638,6 +639,11 @@
 #ifndef SM_SYSLOGDUMP
 /*! Redirector (device/board) to dump the syslog */
 #define SM_SYSLOGDUMP           DEV_SM_SyslogDump
+#endif
+
+#ifndef SM_EEPROMXFER
+/*! Redirector (device/board) to xfer Eeprom */
+#define SM_EEPROMXFER           BRD_SM_EepromXfer
 #endif
 
 /** @} */
