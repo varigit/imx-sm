@@ -2,6 +2,7 @@
 ** ###################################################################
 **
 ** Copyright 2023-2024 NXP
+** Copyright 2024 Variscite
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -52,6 +53,7 @@
 
 #include "sm.h"
 #include "dev_sm.h"
+#include "fsl_eeprom.h"
 #include "fsl_pcal6408a.h"
 #include "fsl_pf09.h"
 #include "fsl_pf53.h"
@@ -95,6 +97,9 @@ extern bool g_pca2131Used;
 
 /*! Fault flags from the PMICs */
 extern uint32_t g_pmicFaultFlags;
+
+/*! Handle to access EEPROM */
+extern Eeprom_Type eepromDev;
 
 /* Functions */
 

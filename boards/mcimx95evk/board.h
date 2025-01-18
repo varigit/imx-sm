@@ -1,5 +1,6 @@
 /*
  * Copyright 2023-2024 NXP
+ * Copyright 2024 Variscite
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -34,6 +35,7 @@
 #define BOARD_HAS_WDOG                                    /*!< Has a watchdog */
 #define BOARD_HAS_PMIC                                    /*!< Has a PMIC */
 #define BOARD_PMIC_RESUME_TICKS ((20U * 32768U) / 10000U) /*!< 2ms in 32K ticks */
+#define BOARD_HAS_EEPROM                                  /*!< Has an EEPROM */
 /** @} */
 
 /*!

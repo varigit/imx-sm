@@ -2,6 +2,7 @@
 ** ###################################################################
 **
 ** Copyright 2023-2024 NXP
+** Copyright 2024 Variscite
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -655,3 +656,51 @@ static int32_t BRD_SM_InitComplete(uint32_t mSel)
     return SM_ERR_SUCCESS;
 }
 
+/*--------------------------------------------------------------------------*/
+/* Read data from EEPROM                                                    */
+/*--------------------------------------------------------------------------*/
+int32_t BRD_SM_EepromRead(uint16_t offset, uint8_t *data, uint16_t len)
+{
+    if (data == NULL || len == 0U)
+    {
+        return SM_ERR_INVALID_PARAMETERS;
+    }
+    if (!Eeprom_Read(&eepromDev, offset, data, len))
+    {
+        return SM_ERR_HARDWARE_ERROR;
+    }
+    return SM_ERR_SUCCESS;
+}
+
+/*--------------------------------------------------------------------------*/
+/* Write data to EEPROM                                                     */
+/*--------------------------------------------------------------------------*/
+int32_t BRD_SM_EepromWrite(uint16_t offset, uint8_t *data, uint16_t len)
+{
+    if (data == NULL || len == 0U)
+    {
+        return SM_ERR_INVALID_PARAMETERS;
+    }
+    if (!Eeprom_Write(&eepromDev, offset, data, len))
+    {
+        return SM_ERR_HARDWARE_ERROR;
+ }
+    return SM_ERR_SUCCESS;
+}
+
+/*--------------------------------------------------------------------------*/
+/* Xfer data to EEPROM                                                      */
+/*--------------------------------------------------------------------------*/
+int32_t BRD_SM_EepromXfer(uint8_t dir, uint16_t offset,
+    uint8_t *buffer, uint16_t len)
+{
+    switch (dir)
+    {
+        case BRD_SM_EEPROM_XFER_READ:
+            return BRD_SM_EepromRead(offset, buffer, len);
+        case BRD_SM_EEPROM_XFER_WRITE:
+            return BRD_SM_EepromWrite(offset, buffer, len);
+        default:
+            return SM_ERR_INVALID_PARAMETERS;
+    }
+}
