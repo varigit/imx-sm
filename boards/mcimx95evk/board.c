@@ -337,9 +337,6 @@ void BOARD_InitHandlers(void)
     /* Enable FCCU handler */
     NVIC_SetPriority(FCCU_INT0_IRQn, IRQ_PRIO_NOPREEMPT_CRITICAL);
     NVIC_EnableIRQ(FCCU_INT0_IRQn);
-
-    /* Enable GPIO1 handler */
-    NVIC_EnableIRQ(GPIO1_0_IRQn);
 }
 
 /*--------------------------------------------------------------------------*/
